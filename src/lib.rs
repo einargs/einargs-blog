@@ -13,7 +13,8 @@ if #[cfg(feature = "hydrate")] {
 
       console_error_panic_hook::set_once();
 
-      leptos::mount_to_body(App);
+      leptos::leptos_dom::HydrationCtx::stop_hydrating();
+      // leptos::mount_to_body(App);
     }
 }
 }

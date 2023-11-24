@@ -1,0 +1,12 @@
+{
+  "name": "einargs-blog",
+  "version": "1.0.0",
+  "description": "Blog built in rust",
+  "main": "index.js",
+  "scripts": {},
+  "author": "einargs",
+  "license": "ISC",
+  "devDependencies": {
+    "tailwindcss": "^3.3.5"
+  }
+}

@@ -11,7 +11,7 @@
   outputs = { self, nixpkgs }:
   let system = "x86_64-linux";
       pkgs = nixpkgs.legacyPackages.${system};
-      tailwindcss = pkgs.nodePackages.tailwindcss;
+      /*tailwindcss = pkgs.nodePackages.tailwindcss;
       tailwind-watch = pkgs.writeShellApplication {
         name = "tailwind-watch";
 
@@ -19,7 +19,7 @@
         text = ''
           tailwindcss -i ./input.css -o ./style/output.css --watch
         '';
-      };
+      };*/
   in {
 
     devShells.x86_64-linux.default = pkgs.mkShell {
@@ -31,8 +31,6 @@
         openssl.dev
         rustup
         nodejs_20
-        tailwindcss
-        tailwind-watch
       ];
       # To setup you'll need to use rustup to install nightly, then
       # add the wasm-unknown-unknown target.
@@ -46,6 +44,7 @@
         ./flake.lock
       ];
       shellHook = ''
+        alias tailwind-watch="npx tailwindcss -i ./style/input.css -o ./style/output.css --watch"
         alias trunk="~/.cargo/bin/trunk"
       '';
     };
