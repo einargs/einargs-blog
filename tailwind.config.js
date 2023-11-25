@@ -18,6 +18,7 @@ module.exports = {
         primary: "#8f2c45", // a purple
         secondary: "#2c8f76", // a teal
         accent: "#8f452c", // a brown
+        paper: "#FFFFFF",
       },
     },
   },

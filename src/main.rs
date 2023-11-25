@@ -6,20 +6,18 @@ async fn main() -> std::io::Result<()> {
   use einargs_blog::app::*;
   use futures::future::try_join_all;
   use leptos::*;
-  use leptos_actix::{generate_route_list_with_ssg, LeptosRoutes};
-  use leptos_router::*;
+  use leptos_actix::{generate_route_list, generate_route_list_with_ssg, LeptosRoutes};
+  use leptos_router::{build_static_routes, *};
 
   let conf = get_configuration(None).await.unwrap();
   let addr = conf.leptos_options.site_addr;
   // Generate the list of routes in your Leptos App
-  let (routes, _static_data_map) = generate_route_list_with_ssg(App);
-  let params = StaticParamsMap::default();
-  try_join_all(
-    routes
-      .iter()
-      .map(|route| route.build_static(&conf.leptos_options, App, || {}, &params)),
-  )
-  .await?;
+  //let routes = generate_route_list(App);
+  let (routes, static_data_map) = generate_route_list_with_ssg(App);
+  build_static_routes(&conf.leptos_options, App, &routes, &static_data_map)
+    .await
+    .unwrap();
+  //Commenting this out while I try to get islands working
   println!("listening on http://{}", &addr);
 
   HttpServer::new(move || {
@@ -34,13 +32,6 @@ async fn main() -> std::io::Result<()> {
       .service(Files::new("/assets", site_root))
       // serve the favicon from /favicon.ico
       .service(favicon)
-      // Sticking this 
-      /*.service(Files::new("", site_root)
-        .use_hidden_files()
-        .show_files_listing()
-        .index_file(".static.html")
-        //.path_filter(|path, _head| path.ends_with("static.html")))
-      )*/
       .leptos_routes(leptos_options.to_owned(), routes.to_owned(), App)
       .app_data(web::Data::new(leptos_options.to_owned()))
     //.wrap(middleware::Compress::default())
