@@ -2,9 +2,9 @@ use leptos::*;
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
-pub struct PostMetadata {
-  pub title: String,
-  pub description: String,
+struct PostMetadata {
+  title: String,
+  description: String,
 }
 
 impl PostMetadata {
@@ -17,10 +17,6 @@ impl PostMetadata {
     // content is a &str.
     let data = matter.parse_with_struct::<PostMetadata>(content)?;
     Some((data.data, data.content))
-  }
-
-  pub fn create_href(&self) -> String {
-    self.title.replace(' ', "-").to_lowercase()
   }
 }
 
@@ -54,26 +50,39 @@ impl PostContent {
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Post {
-  pub metadata: PostMetadata,
+  pub title: String,
+  pub link_slug: String,
+  pub description: String,
   pub content: PostContent,
 }
 
 impl Post {
   #[cfg(any(feature = "ssr", feature = "rust-analyzer"))]
-  pub fn parse(content: &str) -> Option<Post> {
+  pub fn parse(slug: String, content: &str) -> Option<Post> {
     let (meta, rest) = PostMetadata::parse(content)?;
     let content = PostContent::parse(&rest)?;
     Some(Post {
-      metadata: meta,
+      title: meta.title,
+      link_slug: slug,
+      description: meta.description,
       content,
     })
+  }
+
+  pub fn create_href(&self) -> String {
+    format!("/blog/{}", &self.link_slug)
   }
 
   #[cfg(any(feature = "ssr", feature = "rust-analyzer"))]
   pub async fn parse_from<P: AsRef<async_std::path::Path>>(path: P) -> Result<Post, ServerFnError> {
     use async_std::fs::read_to_string;
-    let content = read_to_string(path).await?;
-    Post::parse(&content).ok_or(ServerFnError::ServerError(
+    use ServerFnError::ServerError;
+    let content = read_to_string(&path).await?;
+    let slug: String = path.as_ref().file_stem()
+      .and_then(|s| s.to_str())
+      .ok_or(ServerError(format!("Could not parse slug from {:?}", path.as_ref())))?
+      .to_owned();
+    Post::parse(slug, &content).ok_or(ServerError(
       "could not parse post".to_owned(),
     ))
   }
@@ -94,7 +103,18 @@ impl Post {
   }
 }
 
+// TODO: build an api that only gets the metadata for each post?
+// Also, I should cache a map of posts to use server side?
+// Except really that's just what's used when generating. So I'm
+// not sure there's a need. But good to learn.
+
 #[server(GetPosts, "/api")]
 pub async fn get_posts() -> Result<Vec<Post>, ServerFnError> {
   Post::parse_in_dir("posts").await
+}
+
+#[server(GetPost, "/api")]
+pub async fn get_post(link_slug: String) -> Result<Post, ServerFnError> {
+  let path = format!("posts/{}.md", link_slug);
+  Post::parse_from(path).await
 }

@@ -4,25 +4,24 @@ use leptos_router::*;
 
 #[component]
 fn Header() -> impl IntoView {
-  let link_class = "font-medium text-gray-900 hover:text-gray-600";
+  let link_class = "font-medium text-white hover:text-gray-200";
 
   view! {
     <header class="flex flex-wrap sm:justify-start z-40 \
-      sm:flex-nowrap z-50 w-full bg-white shadow-lg \
+      sm:flex-nowrap z-50 w-full bg-dark-gray shadow-lg \
       text-sm py-4 mb-4">
       <div class="xl:container">
         <nav class="px-4 sm:flex \
             sm:items-center sm:justify-between"
           //aria_label="Global"
           >
-          <A class="flex-none text-xl font-semibold"
+          <A class="flex-none text-xl font-bold text-white hover:text-gray-200"
             href="/">"einargs"</A>
           <div class="flex flex-row items-center gap-5 mt-5 \
             sm:justify-end sm:mt-0 sm:ps-5">
             <A class=link_class href="/">"About"</A>
-            <A class=link_class href="#">"Resume"</A>
-            <A class=link_class href="/projects">"Projects"</A>
-            <A class=link_class href="#">"Blog"</A>
+            <a class=link_class href="/resume.pdf">"Resume"</A>
+            <A class=link_class href="/blog">"Blog"</A>
           </div>
         </nav>
       </div>
@@ -34,6 +33,9 @@ fn Header() -> impl IntoView {
 fn Footer() -> impl IntoView {
   view! {
     <footer class="py-10">
+      <div class="w-full mx-auto text-center">
+        "Under construction."
+      </div>
       <div class="w-full mx-auto text-center">
         "Made with ❤️ using Rust, Leptos, and TailwindCSS."
       </div>
@@ -69,9 +71,17 @@ pub fn App() -> impl IntoView {
   }
 }
 
+#[server]
+async fn get_static_data() -> Result<StaticParamsMap, ServerFnError> {
+  let mut blog_posts = StaticParamsMap::new();
+  blog_posts.insert("slug", vec!["test".to_owned()]);
+  Ok(blog_posts)
+}
+
 #[component(transparent)]
 fn BlogRouter() -> impl IntoView {
-  use crate::routes::projects::ProjectsPage;
+  use crate::routes::blog::*;
+
 
   view! {
     <Routes>
@@ -83,9 +93,15 @@ fn BlogRouter() -> impl IntoView {
       />
       <StaticRoute
         mode=StaticMode::Upfront
-        path="/projects"
-        view=ProjectsPage
+        path="/blog"
+        view=BlogPostsPage
         static_params=|| Box::pin(async { StaticParamsMap::default() })
+      />
+      <StaticRoute
+        mode=StaticMode::Incremental
+        path="/blog/:slug"
+        view=BlogPostPage
+        static_params=|| Box::pin(async { get_static_data().await.expect("should only run on server") })
         />
       <StaticRoute
         mode=StaticMode::Upfront
@@ -144,11 +160,19 @@ fn AboutPage() -> impl IntoView {
   view! {
     <div class="grow flex flex-row justify-center items-center">
       <div class="">
-        <h1 class="text-6xl text-center">"einargs"</h1>
-        <div class="text-2xl">"Fullstack Web Developer | Functional Programmer | Type Enthusiast"</div>
-        <A href="/other">"Link to other page"</A>
-        <A href="/wrong">"Bad link"</A>
-        <Counter />
+        <div class="text-center mb-5">
+          <div class="before:block before:absolute before:-inset-1 \
+                      before:-skew-y-3 before:bg-primary before:outline-black before:outline-2 before:drop-shadow-xl relative inline-block">
+            <h1 class="relative text-white text-6xl text-center p-4">"einargs"</h1>
+          </div>
+        </div>
+      <div class="text-2xl space-3 justify-items-center items-center flex flex-col md:flex-row">
+      <span>"Fullstack Web Developer"</span>
+      <span class="hidden md:inline">"|"</span>
+      <span>"Functional Programmer"</span>
+      <span class="hidden md:inline">"|"</span>
+          <span>"Type Enthusiast"</span>
+        </div>
       </div>
     </div>
   }

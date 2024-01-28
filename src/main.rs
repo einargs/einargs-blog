@@ -17,7 +17,6 @@ async fn main() -> std::io::Result<()> {
   build_static_routes(&conf.leptos_options, App, &routes, &static_data_map)
     .await
     .unwrap();
-  //Commenting this out while I try to get islands working
   println!("listening on http://{}", &addr);
 
   HttpServer::new(move || {

@@ -2,7 +2,7 @@
   description = "Blog built with Rust as the frontend";
 
   inputs = {
-    nixpkgs.url = "nixpkgs/nixos-23.05";
+    nixpkgs.url = "nixpkgs/nixos-23.11";
   };
   nixConfig = {
     bash-prompt = ''\[\033[1;32m\][\[\e]0;\u@\h: \w\a\]dev-shell:\w]\$\[\033[0m\] '';
@@ -31,6 +31,9 @@
         openssl.dev
         rustup
         nodejs_20
+        # Useful tool for serving the generated files statically while
+        # developing in order to test how they'll do without the router.
+        miniserve
       ];
       # To setup you'll need to use rustup to install nightly, then
       # add the wasm-unknown-unknown target.

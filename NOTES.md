@@ -36,3 +36,6 @@ with it.
   .path_filter(|path, _head| path.ends_with("static.html")))
 )
 ```
+
+# TODO
+- Check out daisyui's `prose` https://daisyui.com/docs/layout-and-typography/

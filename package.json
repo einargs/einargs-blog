@@ -7,6 +7,7 @@
   "author": "einargs",
   "license": "ISC",
   "devDependencies": {
+    "daisyui": "^4.4.9",
     "tailwindcss": "^3.3.5"
   }
 }
