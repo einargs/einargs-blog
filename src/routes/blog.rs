@@ -42,22 +42,20 @@ struct BlogPostParams {
 pub fn BlogPostPage() -> impl IntoView {
   let params = use_params::<BlogPostParams>();
   // TODO add routing logic to redirect to 404 if this slug doesn't exist
+  // TODO: fix all the expects in here, they're disgusting
   let post = create_resource(
     move || params.get()
               .map(move |params| params.slug)
-              .ok_or(ServerFnError::ServerError("could not parse params".to_owned())),
+              .map_err(|_| ServerFnError::ServerError("could not parse params".to_owned())),
     |slug_opt| async move {
-      slug_opt.map(|slug| get_post(slug))?.await.expect()
+      slug_opt.map(|slug| get_post(slug)).expect("server error").await.expect("server error")
     }
   );
 
-  let post_view = |result| match result {
-    Err
-    Ok(Post{title, content, ..}) => view! {
+  let post_view = |post| match post {
+    Post{title, content, ..} => view! {
       <h1 class="text-2xl">{title}</h1>
-      <div class="post-markdown" inner_html=content.inner_html()>
-
-      </div>
+      <div class="post-markdown" inner_html=content.inner_html()></div>
     }
   };
 
@@ -66,7 +64,7 @@ pub fn BlogPostPage() -> impl IntoView {
       <Suspense
       fallback=Loading
       >
-    {post.get().map(|post_result| post_view(post_result.expect("error loading post on server")))}
+    {post.get().map(|post_result| post_view(post_result))}
       </Suspense>
     </div>
   }
