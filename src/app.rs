@@ -71,49 +71,27 @@ pub fn App() -> impl IntoView {
   }
 }
 
-#[server]
-async fn get_static_data() -> Result<StaticParamsMap, ServerFnError> {
-  let mut blog_posts = StaticParamsMap::new();
-  blog_posts.insert("slug", vec!["test".to_owned()]);
-  Ok(blog_posts)
-}
-
 #[component(transparent)]
 fn BlogRouter() -> impl IntoView {
   use crate::routes::blog::*;
 
-
   view! {
     <Routes>
-      <StaticRoute
-        mode=StaticMode::Upfront
+      <Route
         path="/"
         view=AboutPage
-        static_params=|| Box::pin(async { StaticParamsMap::default() })
       />
-      <StaticRoute
-        mode=StaticMode::Upfront
+      <Route
         path="/blog"
         view=BlogPostsPage
-        static_params=|| Box::pin(async { StaticParamsMap::default() })
       />
-      <StaticRoute
-        mode=StaticMode::Incremental
+      <Route
         path="/blog/:slug"
         view=BlogPostPage
-        static_params=|| Box::pin(async { get_static_data().await.expect("should only run on server") })
         />
-      <StaticRoute
-        mode=StaticMode::Upfront
-        path="/other"
-        view=OtherPage
-        static_params=|| Box::pin(async { StaticParamsMap::default() })
-        />
-      <StaticRoute
-        mode=StaticMode::Upfront
+      <Route
         path="/404"
         view=NotFoundPage
-        static_params=|| Box::pin(async { StaticParamsMap::default() })
         />
     // TODO: make this a static route with an any parameter that is
     // "404". That way we'll auto build that for the SSG.
@@ -181,7 +159,9 @@ fn AboutPage() -> impl IntoView {
 #[component]
 fn NotFoundPage() -> impl IntoView {
   view! {
-      <h1>"Custom Not Found"</h1>
+    <div class="container grow flex content-center">
+      <h1 class="text-2xl">"Custom Not Found"</h1>
+    </div>
   }
 }
 

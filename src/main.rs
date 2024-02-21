@@ -60,7 +60,8 @@ pub fn main() {
   // see optional feature `csr` instead
 }
 
-#[cfg(any(all(not(feature = "ssr"), feature = "csr"), feature = "rust-analyzer"))]
+// #[cfg(any(all(not(feature = "ssr"), feature = "csr"), feature = "rust-analyzer"))]
+#[cfg(any(feature = "csr", feature = "rust-analyzer"))]
 pub fn main() {
   // a client-side main function is required for using `trunk serve`
   // prefer using `cargo leptos serve` instead

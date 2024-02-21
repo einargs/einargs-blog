@@ -2,7 +2,19 @@ use leptos::*;
 use leptos_router::Params;
 use leptos_router::*;
 
-use crate::server::posts::*;
+use post_lib::StaticPost;
+use post_macros::posts_metadata;
+
+posts_metadata!(POSTS, "./posts");
+
+fn get_post_for(slug: String) -> Option<&'static StaticPost> {
+  for post in POSTS.iter() {
+    if post.link_slug == slug {
+      return Some(post)
+    }
+  }
+  return None
+}
 
 #[component]
 fn Loading() -> impl IntoView {
@@ -12,7 +24,7 @@ fn Loading() -> impl IntoView {
 }
 
 #[component]
-fn PostCard(post: Post) -> impl IntoView {
+fn PostCard(post: &'static StaticPost) -> impl IntoView {
   let href = post.create_href();
   view! {
     <div class="flex flex-col bg-white border shadow-lg h-full rounded-xl">
@@ -43,56 +55,51 @@ pub fn BlogPostPage() -> impl IntoView {
   let params = use_params::<BlogPostParams>();
   // TODO add routing logic to redirect to 404 if this slug doesn't exist
   // TODO: fix all the expects in here, they're disgusting
-  let post = create_resource(
-    move || params.get()
-              .map(move |params| params.slug)
-              .map_err(|_| ServerFnError::ServerError("could not parse params".to_owned())),
-    |slug_opt| async move {
-      slug_opt.map(|slug| get_post(slug)).expect("server error").await.expect("server error")
-    }
-  );
 
-  let post_view = |post| match post {
-    Post{title, content, ..} => view! {
-      <h1 class="text-2xl">{title}</h1>
-      <div class="post-markdown" inner_html=content.inner_html()></div>
+  let post_opt = move || -> Option<&'static StaticPost> {
+    let post_params = params.get().ok()?;
+    let slug = post_params.slug;
+    for post in POSTS.iter() {
+      if post.link_slug == slug {
+        return Some(post)
+      }
     }
+    None
+  };
+
+  let redirect = || view! {
+    <Redirect path="/404" />
+  };
+
+  let show_post = |post: &'static StaticPost| {
+    view! {
+      <h1 class="text-2xl">{post.title}</h1>
+      <div class="post-markdown" inner_html={post.content}></div>
+    }
+  };
+
+  let render = move || match post_opt() {
+    Some(post) => show_post(post).into_view(),
+    None => redirect().into_view()
   };
 
   view! {
     <div>
-      <Suspense
-      fallback=Loading
-      >
-    {post.get().map(|post_result| post_view(post_result))}
-      </Suspense>
+      {render}
     </div>
   }
 }
 
 #[component]
 pub fn BlogPostsPage() -> impl IntoView {
-  let posts = create_resource(
-    || (),
-    |_| async move {
-      get_posts()
-        .await
-        .expect("error getting posts while generating")
-    },
-  );
-
   view! {
     <div>
       <h1 class="text-2xl">"Projects"</h1>
       <div class="grow grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
-      <Suspense
-      fallback=Loading
-      >
-    {posts.get().map(|posts| posts.into_iter()
-                     .map(|post| view! { <PostCard post /> })
-                     .collect_view()
-    )}
-    </Suspense>
+        {POSTS.iter()
+          .map(|post| view! { <PostCard post /> })
+          .collect_view()
+        }
       </div>
     </div>
   }

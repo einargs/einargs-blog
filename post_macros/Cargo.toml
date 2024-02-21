@@ -1,0 +1,13 @@
+[package]
+name = "post_macros"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+proc-macro = true
+
+[dependencies]
+post_lib = { path = "../post_lib" }
+proc-macro2 = "1.0.78"
+quote = "1.0.35"
+syn = {version = "2.0.48", features = ["full", "parsing"]}

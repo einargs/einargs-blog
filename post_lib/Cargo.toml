@@ -1,0 +1,11 @@
+[package]
+name = "post_lib"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+serde = { workspace = true }
+pulldown-cmark = { version = "0.9.3" }
+gray_matter = { version = "0.2.6" }
