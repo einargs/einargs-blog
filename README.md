@@ -14,3 +14,6 @@ multipage site ala various existing tools. I haven't had the time to work on
 that though.
 
 The main branch is more targeted around working on that.
+
+It turns out there's a new static site generator called cinnog that I plan to
+check out first. https://github.com/NiklasEi/cinnog
