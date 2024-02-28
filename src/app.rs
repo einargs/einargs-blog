@@ -19,7 +19,7 @@ fn Header() -> impl IntoView {
             href="/">"einargs"</A>
           <div class="flex flex-row items-center gap-5 mt-5 \
             sm:justify-end sm:mt-0 sm:ps-5">
-            <A class=link_class href="/">"About"</A>
+            //<A class=link_class href="/">"About"</A>
             <a class=link_class href="/resume.pdf" download>"Resume"</a>
             <A class=link_class href="/blog">"Blog"</A>
           </div>
