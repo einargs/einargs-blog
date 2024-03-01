@@ -37,5 +37,8 @@ with it.
 )
 ```
 
+## Cinnog
+Cinnog does SSG with the bevy ECS as a data layer. Very cool.
+
 # TODO
 - Check out daisyui's `prose` https://daisyui.com/docs/layout-and-typography/
