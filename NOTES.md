@@ -40,5 +40,7 @@ with it.
 ## Cinnog
 Cinnog does SSG with the bevy ECS as a data layer. Very cool.
 
+Remember to use `#[island]` if I want interactivity.
+
 # TODO
 - Check out daisyui's `prose` https://daisyui.com/docs/layout-and-typography/
