@@ -44,3 +44,4 @@ Remember to use `#[island]` if I want interactivity.
 
 # TODO
 - Check out daisyui's `prose` https://daisyui.com/docs/layout-and-typography/
+- Add styling for the HTML generated from markdown.
