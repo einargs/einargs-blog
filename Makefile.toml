@@ -29,3 +29,9 @@ install_crate = "cargo-leptos"
 command = "cargo"
 args = ["leptos", "watch", "--features", "development", "--hot-reload"]
 workspace = false
+
+[tasks.deploy]
+dependencies = [ "build" ]
+command = "npx"
+args = ["firebase-tools", "deploy", "--only", "hosting"]
+workspace = false

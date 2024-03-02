@@ -49,6 +49,7 @@
       shellHook = ''
         alias tailwind-watch="npx tailwindcss -i ./style/input.css -o ./style/output.css --watch"
         alias trunk="~/.cargo/bin/trunk"
+        alias firebase="npx firebase-tools"
       '';
     };
   };
