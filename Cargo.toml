@@ -13,7 +13,6 @@ members = ["app", "generator", "frontend"]
 [workspace.dependencies]
 cinnog = { version = "0.1", features = ["markdown"] }
 console_error_panic_hook = "0.1"
-cfg-if = "1"
 leptos = { version = "0.6", features = ["nightly", "experimental-islands"] }
 leptos_meta = { version = "0.6", features = ["nightly"] }
 wasm-bindgen = "=0.2.89"

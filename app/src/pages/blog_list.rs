@@ -2,6 +2,7 @@ use bevy_ecs::prelude::{Query, Without};
 use bevy_ecs::query::With;
 use cinnog::{run_system, FileName};
 use leptos::*;
+use chrono::NaiveDate;
 use leptos_router::use_params_map;
 
 use crate::data::post::*;
@@ -10,6 +11,7 @@ struct PostSummary {
   title: String,
   description: String,
   href: String,
+  date: NaiveDate,
 }
 
 #[component]
@@ -35,6 +37,16 @@ fn PostCard(post: PostSummary) -> impl IntoView {
 }
 
 #[component]
+fn Title() -> impl IntoView {
+  view! {
+    <div class="before:block before:absolute before:-inset-1 \
+                before:-skew-y-3 before:bg-primary before:outline-black before:outline-2 before:drop-shadow-xl relative inline-block">
+      <h1 class="relative text-white text-4xl text-center p-4">"Projects"</h1>
+    </div>
+  }
+}
+
+#[component]
 pub fn BlogPostsPage() -> impl IntoView {
   let posts = run_system(get_posts);
 
@@ -44,8 +56,8 @@ pub fn BlogPostsPage() -> impl IntoView {
 
   view! {
     <div>
-      <h1 class="text-2xl">"Projects"</h1>
-      <div class="grow grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
+      <Title />
+      <div class="pt-6 grow grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
         {posts_view}
       </div>
     </div>
@@ -53,14 +65,19 @@ pub fn BlogPostsPage() -> impl IntoView {
 }
 
 fn get_posts(
-    posts: Query<(&PostTitle, &PostDescription, &Slug), (With<Post>, Without<Draft>)>,
+    posts: Query<(&PostTitle, &PostDescription, &PostDate, &Slug), (With<Post>, Without<Draft>)>,
 ) -> Vec<PostSummary> {
-    posts
-      .iter()
-      .map(|(title, desc, slug)| PostSummary {
-        title: title.0.clone(),
-        description: desc.0.clone(),
-        href: format!("/blog/{}", slug.0)
-      })
-      .collect()
+  use std::cmp::Reverse;
+  let mut posts: Vec<_> = posts
+    .iter()
+    .map(|(title, desc, date, slug)| PostSummary {
+      title: title.0.clone(),
+      description: desc.0.clone(),
+      href: format!("/blog/{}", slug.0),
+      date: NaiveDate::parse_from_str(&date.0, "%Y-%m-%d")
+          .expect("yyyy-mm-dd format for dates")
+    })
+    .collect();
+  posts.sort_by_key(|post| Reverse(post.date));
+  posts
 }

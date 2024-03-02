@@ -12,6 +12,7 @@ tracing.workspace = true
 bevy_ecs.workspace = true
 
 leptos_router = { version = "0.6", features = ["nightly"] }
+chrono = "0.4.34"
 
 [features]
 default = []
